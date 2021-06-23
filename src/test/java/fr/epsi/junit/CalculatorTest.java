@@ -52,12 +52,9 @@ public class CalculatorTest {
 
     @Test
     public void should_add_tab(){
+
         int nombre[] = {1,3,5,7,9};
         int result = calculator.add(nombre);
         Assertions.assertEquals(25, result);
     }
-}
-
-
-
 }
