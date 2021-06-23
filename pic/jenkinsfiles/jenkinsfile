@@ -1,0 +1,27 @@
+pipeline {
+   agent any
+   tools {
+       maven "maven-3.0.0-M5"
+       jdk "jdk-16"
+   }
+   stages {
+       stage ('Checkout Git project') {
+           steps {
+                git branch: '${BRANCH_NAME}', credentialsId: '', url: '${SCM_URL}'
+           }
+      }
+      stage ('Package') {
+          steps{
+              sh "mvn -B clean package -DskipTests --settings settings.xml -Dsettings.security=settings-security.xml"
+              archiveArtifacts 'target/*.jar'
+              stash(name : 'build-result', includes: 'target/**/*')
+          }
+      }
+      stage ('Test') {
+         steps {
+            unstash 'build-result'
+            sh 'mvn -B verify --settings settings.xml -Dsettings.security=settings-security.xml'
+            junit 'target/**/*.xml'
+         }
+      }
+}
